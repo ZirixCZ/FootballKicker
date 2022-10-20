@@ -6,10 +6,10 @@
 let ctx = document.getElementById("canvas").getContext("2d");
 
 const values = {
-    linePosition_x: 0,
+    playerPosition_x: 0,
     movementDirection: 0,
-    speedMultiplier: 5,
-    lineSize: 500
+    speedMultiplier: 15,
+    playerSize: 700
 }
 
 // After the app has finished loading, get into a recursive function
@@ -24,18 +24,18 @@ function drawCtx(ctx, color) {
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 }
 
-// Draws a moving line
+// Draws a moving rectangle
 function drawLine(ctx, linePosition_x, direction) {
     direction *= values.speedMultiplier;
 
     linePosition_x = linePosition_x + direction;
-    if (linePosition_x >= 0 && linePosition_x <= window.outerWidth-values.lineSize)
-        values.linePosition_x = linePosition_x;
+    if (linePosition_x >= 0 && linePosition_x <= window.outerWidth-values.playerSize)
+        values.playerPosition_x = linePosition_x;
 
     ctx.beginPath();
     ctx.strokeStyle = 'white';
     ctx.moveTo(linePosition_x, window.innerHeight-window.innerHeight/8);
-    ctx.lineTo(values.lineSize+linePosition_x, window.innerHeight-window.innerHeight/8);
+    ctx.rect(linePosition_x, window.innerHeight-window.innerHeight/8, values.playerSize, 20);
     ctx.stroke();
 }
 
@@ -43,7 +43,7 @@ function update() {
     if (!ctx.canvas) return;
 
     document.onkeydown = (e) => {
-        values.movementDirection = e.key === "d" ? 1 : e.key === "a" ? -1 : 0;
+        values.movementDirection = e.key === "d" || e.key === "ArrowRight" ? 1 : e.key === "a" || e.key === "ArrowLeft" ? -1 : 0;
     }
 
 
@@ -51,7 +51,7 @@ function update() {
     ctx.canvas.height = window.innerHeight;
 
     drawCtx(ctx, "#112");
-    drawLine(ctx, values.linePosition_x, values.movementDirection);
+    drawLine(ctx, values.playerPosition_x, values.movementDirection);
 
     setTimeout(() => {
         requestAnimationFrame(update);
