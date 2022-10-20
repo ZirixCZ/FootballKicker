@@ -5,7 +5,14 @@
 
 let ctx = document.getElementById("canvas").getContext("2d");
 
-// After app has finished loading, get into a recursive function
+const values = {
+    linePosition_x: 0,
+    movementDirection: 0,
+    speedMultiplier: 5,
+    lineSize: 500
+}
+
+// After the app has finished loading, get into a recursive function
 window.onload = () => {
     requestAnimationFrame(update);
 }
@@ -15,34 +22,37 @@ function drawCtx(ctx, color) {
     ctx.beginPath();
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-    console.log(window.innerWidth)
 }
 
 // Draws a moving line
-function drawLine(ctx) {
+function drawLine(ctx, linePosition_x, direction) {
+    direction *= values.speedMultiplier;
+
+    linePosition_x = linePosition_x + direction;
+    if (linePosition_x >= 0 && linePosition_x <= window.outerWidth-values.lineSize)
+        values.linePosition_x = linePosition_x;
+
     ctx.beginPath();
     ctx.strokeStyle = 'white';
-    ctx.moveTo(x_offset, 20);
-    ctx.lineTo(200 + x_offset, 20);
+    ctx.moveTo(linePosition_x, window.innerHeight-window.innerHeight/8);
+    ctx.lineTo(values.lineSize+linePosition_x, window.innerHeight-window.innerHeight/8);
     ctx.stroke();
 }
-
-let x_offset = 0;
 
 function update() {
     if (!ctx.canvas) return;
 
     document.onkeydown = (e) => {
-        console.log(e.key)
+        values.movementDirection = e.key === "d" ? 1 : e.key === "a" ? -1 : 0;
     }
+
 
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
 
     drawCtx(ctx, "#112");
-    drawLine(ctx, x_offset);
+    drawLine(ctx, values.linePosition_x, values.movementDirection);
 
-    x_offset++;
     setTimeout(() => {
         requestAnimationFrame(update);
     }, 1000 / 60);
