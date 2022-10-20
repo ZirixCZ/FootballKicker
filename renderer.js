@@ -36,7 +36,15 @@ function drawLine(ctx, linePosition_x, direction) {
     ctx.strokeStyle = 'white';
     ctx.moveTo(linePosition_x, window.innerHeight-window.innerHeight/8);
     ctx.rect(linePosition_x, window.innerHeight-window.innerHeight/8, values.playerSize, 20);
-    ctx.stroke();
+    ctx.fillStyle = "white";
+    ctx.fill();
+}
+
+function drawBall(ctx) {
+    ctx.beginPath();
+    ctx.arc(100, 75, 50, 0, 2 * Math.PI);
+    ctx.fillStyle = "white";
+    ctx.fill();
 }
 
 function update() {
@@ -52,6 +60,7 @@ function update() {
 
     drawCtx(ctx, "#112");
     drawLine(ctx, values.playerPosition_x, values.movementDirection);
+    drawBall(ctx);
 
     setTimeout(() => {
         requestAnimationFrame(update);
