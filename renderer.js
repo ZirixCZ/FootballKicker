@@ -49,7 +49,7 @@ function drawLine(ctx, linePosition_x, direction) {
 function drawBall(ctx, y) {
     values.arc_y = y + (10*values.arc_direction);
     ctx.beginPath();
-    if (values.arc_y >= window.innerHeight-window.innerHeight/values.bottomPlayerPadding-values.playerHeight-10 && values.arc_x >= values.playerPosition_x && values.arc_x <= window.innerWidth-window.innerHeight-values.playerPosition_x+values.playerWidth) {
+    if (values.arc_y >= window.innerHeight-window.innerHeight/values.bottomPlayerPadding-values.playerHeight-25 && values.arc_x >= values.playerPosition_x && values.arc_x <= window.innerWidth-window.innerHeight-values.playerPosition_x+values.playerWidth) {
         values.arc_direction *= -1;
         values.score++;
     }
@@ -72,8 +72,8 @@ function update() {
     ctx.canvas.height = window.innerHeight;
 
     drawCtx(ctx, "#112");
-    drawLine(ctx, values.playerPosition_x, values.movementDirection);
     drawBall(ctx, values.arc_y);
+    drawLine(ctx, values.playerPosition_x, values.movementDirection);
 
     ctx.font = '48px serif';
     ctx.fillText('Me beloved game', window.innerWidth/2, window.innerHeight/2);
