@@ -6,10 +6,15 @@
 let ctx = document.getElementById("canvas").getContext("2d");
 
 const values = {
+    score: 0,
     playerPosition_x: 0,
     movementDirection: 0,
     speedMultiplier: 15,
-    playerSize: 700
+    bottomPlayerPadding: 8,
+    playerHeight: 20,
+    playerWidth: 700,
+    arc_x: 100,
+    arc_y: 100
 }
 
 // After the app has finished loading, get into a recursive function
@@ -29,20 +34,25 @@ function drawLine(ctx, linePosition_x, direction) {
     direction *= values.speedMultiplier;
 
     linePosition_x = linePosition_x + direction;
-    if (linePosition_x >= 0 && linePosition_x <= window.outerWidth-values.playerSize)
+    if (linePosition_x >= 0 && linePosition_x <= window.outerWidth-values.playerWidth)
         values.playerPosition_x = linePosition_x;
 
     ctx.beginPath();
     ctx.strokeStyle = 'white';
-    ctx.moveTo(linePosition_x, window.innerHeight-window.innerHeight/8);
-    ctx.rect(linePosition_x, window.innerHeight-window.innerHeight/8, values.playerSize, 20);
+    ctx.moveTo(linePosition_x, window.innerHeight-window.innerHeight/values.bottomPlayerPadding);
+    ctx.rect(linePosition_x, window.innerHeight-window.innerHeight/values.bottomPlayerPadding, values.playerWidth, values.playerHeight);
     ctx.fillStyle = "white";
     ctx.fill();
 }
 
-function drawBall(ctx) {
+function drawBall(ctx, y) {
+    values.arc_y = y + 10;
     ctx.beginPath();
-    ctx.arc(100, 75, 50, 0, 2 * Math.PI);
+    if (values.arc_y >= window.innerHeight-window.innerHeight/values.bottomPlayerPadding-values.playerHeight-10) {
+        values.arc_y = 0;
+        values.score++;
+    }
+    ctx.arc(values.arc_x, values.arc_y, 50, 0, 2 * Math.PI);
     ctx.fillStyle = "white";
     ctx.fill();
 }
@@ -50,17 +60,20 @@ function drawBall(ctx) {
 function update() {
     if (!ctx.canvas) return;
 
-    document.onkeydown = (e) => {
+    document.onkeydown = (e) =>
         values.movementDirection = e.key === "d" || e.key === "ArrowRight" ? 1 : e.key === "a" || e.key === "ArrowLeft" ? -1 : 0;
-    }
-
 
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
 
     drawCtx(ctx, "#112");
     drawLine(ctx, values.playerPosition_x, values.movementDirection);
-    drawBall(ctx);
+    drawBall(ctx, values.arc_y);
+
+    ctx.font = '48px serif';
+    ctx.fillText('Me beloved game', window.innerWidth/2, window.innerHeight/2);
+    ctx.font = '90px serif';
+    ctx.fillText(values.score, window.innerWidth/2, window.innerHeight/2+150);
 
     setTimeout(() => {
         requestAnimationFrame(update);
