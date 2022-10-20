@@ -9,12 +9,13 @@ const values = {
     score: 0,
     playerPosition_x: 0,
     movementDirection: 0,
-    speedMultiplier: 15,
+    speedMultiplier: 25,
     bottomPlayerPadding: 8,
     playerHeight: 20,
     playerWidth: 700,
     arc_x: 100,
-    arc_y: 100
+    arc_y: 100,
+    arc_direction: 1
 }
 
 // After the app has finished loading, get into a recursive function
@@ -46,12 +47,16 @@ function drawLine(ctx, linePosition_x, direction) {
 }
 
 function drawBall(ctx, y) {
-    values.arc_y = y + 10;
+    values.arc_y = y + (10*values.arc_direction);
     ctx.beginPath();
-    if (values.arc_y >= window.innerHeight-window.innerHeight/values.bottomPlayerPadding-values.playerHeight-10) {
-        values.arc_y = 0;
+    if (values.arc_y >= window.innerHeight-window.innerHeight/values.bottomPlayerPadding-values.playerHeight-10 && values.arc_x >= values.playerPosition_x && values.arc_x <= window.innerWidth-window.innerHeight-values.playerPosition_x+values.playerWidth) {
+        values.arc_direction *= -1;
         values.score++;
     }
+
+    if (values.arc_y <= 0)
+        values.arc_direction *= -1;
+
     ctx.arc(values.arc_x, values.arc_y, 50, 0, 2 * Math.PI);
     ctx.fillStyle = "white";
     ctx.fill();
