@@ -20,8 +20,9 @@ const values = {
     playerWidth: 700,
     playerPosition_x: 0, // Player location. Defines start of the player object
     movementDirection: 0, // Defines the direction of travel for the player
-    arc_x: 900, // Arc x location
+    arc_x: 200, // Arc x location
     arc_y: 100, // Arc y location
+    arcRadius: 50,
     arc_y_direction: 1, // Defines the direction of vertical travel for the arc
     arc_x_direction: 1 // Defines the direction of horizontal travel for the arc
 }
@@ -74,19 +75,31 @@ function drawBall(ctx, y) {
     values.arc_y = y + (20 * values.arc_y_direction);
     values.arc_x = values.arc_x + (5 * values.arc_x_direction);
 
-    if (values.arc_y >= window.innerHeight - window.innerHeight / values.bottomPlayerPadding - values.playerHeight - 25 && values.arc_y < window.innerHeight && values.arc_x >= values.playerPosition_x && values.arc_x <= values.playerPosition_x + values.playerWidth) {
+    if (values.arc_y >= (window.innerHeight - window.innerHeight / values.bottomPlayerPadding) - (values.playerHeight + values.arcRadius / 2)
+        && values.arc_y <= (window.innerHeight - window.innerHeight / values.bottomPlayerPadding) - (values.playerHeight)
+        && values.arc_x >= values.playerPosition_x - values.arcRadius / 2
+        && values.arc_x <= values.playerPosition_x + values.playerWidth + values.arcRadius / 2) {
         values.arc_y_direction *= -1;
+        if (values.movementDirection !== values.arc_x_direction) {
+            values.arc_x_direction *= -1;
+        }
+
+
+        if (values.arc_y < (window.innerHeight - window.innerHeight / values.bottomPlayerPadding) - (values.playerHeight + 25))
+            return;
+
         values.gameScore++;
     }
 
     if (values.arc_y <= 0)
         values.arc_y_direction *= -1;
 
-    if (values.arc_x <= 0 || values.arc_x >= window.innerWidth)
+    if (values.arc_x <= 0 || values.arc_x >= window.innerWidth) {
         values.arc_x_direction *= -1;
+    }
 
     ctx.beginPath();
-    ctx.arc(values.arc_x, values.arc_y, 50, 0, 2 * Math.PI);
+    ctx.arc(values.arc_x, values.arc_y, values.arcRadius, 0, 2 * Math.PI);
     ctx.fillStyle = "white";
     ctx.fill();
 }
@@ -108,8 +121,9 @@ function update() {
     drawBall(ctx, values.arc_y);
     drawLine(ctx, values.playerPosition_x, values.movementDirection);
 
+
     ctx.font = '48px serif';
-    ctx.fillText('Me beloved game', window.innerWidth / 2, window.innerHeight / 2);
+    ctx.fillText('My beloved game', window.innerWidth / 2, window.innerHeight / 2);
     ctx.font = '90px serif';
     ctx.fillText(values.gameScore, window.innerWidth / 2, window.innerHeight / 2 + 150);
 
