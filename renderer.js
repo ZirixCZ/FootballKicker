@@ -114,6 +114,9 @@ function update() {
     document.onkeydown = (e) =>
         values.movementDirection = e.key === "d" || e.key === "ArrowRight" ? 1 : e.key === "a" || e.key === "ArrowLeft" ? -1 : 0;
 
+    document.onkeyup = (e) =>
+        values.movementDirection = 0;
+
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
 
