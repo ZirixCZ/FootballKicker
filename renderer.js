@@ -7,7 +7,6 @@
  * CanvasRenderingContext2D provides methods and properties for drawing graphics on a canvas element
  */
 let ctx = document.getElementById("canvas").getContext("2d");
-
 /**
  * Global properties
  * @type {{arc_y: number, playerHeight: number, movementDirection: number, arc_y_direction: number, speedMultiplier: number, arc_x: number, arc_x_direction: number, playerPosition_x: number, playerWidth: number, gameScore: number, bottomPlayerPadding: number}}
@@ -16,19 +15,30 @@ const values = {
     gameScore: 0,
     numOfTargets: 5,
     targets: [],
-    targetHeight: 50,
-    speedMultiplier: 25,
+    targetHeight: 150,
+    speedMultiplier: 30,
     bottomPlayerPadding: 8,
-    playerHeight: 20,
-    playerWidth: 700,
+    playerHeight: 150,
+    playerWidth: 150,
     playerPosition_x: 0, // Player location. Defines start of the player object
     movementDirection: 0, // Defines the direction of travel for the player
     arc_x: 200, // Arc x location
-    arc_y: 110, // Arc y location
-    arcRadius: 50,
+    arc_y: 300, // Arc y location
+    arcRadius: 75,
     arc_y_direction: 1, // Defines the direction of vertical travel for the arc
     arc_x_direction: 1 // Defines the direction of horizontal travel for the arc
 }
+
+let football = new Image();
+football.src = "./assets/football.png";
+let footballgoal = new Image();
+footballgoal.src = "./assets/footballgoal.png";
+let footballgoalcheckmark = new Image();
+footballgoalcheckmark.src = "./assets/footballgoalcheckmark.png";
+let foot = new Image();
+foot.src = "./assets/foot.png";
+
+
 
 /**
  * Fires immediately after the browser loads the object.
@@ -44,6 +54,7 @@ window.onload = () => {
 function drawCtx(ctx, color) {
     ctx.beginPath();
     ctx.fillStyle = color;
+    ctx.imageSmoothingQuality = "high"
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 }
 
@@ -58,15 +69,16 @@ function drawPlayer(ctx, playerPosition_x, direction) {
     direction *= values.speedMultiplier;
     playerPosition_x = playerPosition_x + direction;
 
-    if (playerPosition_x >= 0 && playerPosition_x <= window.outerWidth - values.playerWidth)
+    if (playerPosition_x >= 0 && playerPosition_x <= window.innerWidth - values.playerWidth + 5)
         values.playerPosition_x = playerPosition_x;
 
     ctx.beginPath();
     ctx.strokeStyle = 'white';
     ctx.moveTo(playerPosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding);
-    ctx.rect(playerPosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding, values.playerWidth, values.playerHeight);
+    //ctx.rect(playerPosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding, values.playerWidth, values.playerHeight);
+    ctx.drawImage(foot, playerPosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding, values.playerWidth, values.playerHeight);
     ctx.fillStyle = "white";
-    ctx.fill();
+    ctx.stroke();
 }
 
 /**
@@ -75,13 +87,21 @@ function drawPlayer(ctx, playerPosition_x, direction) {
  * @param {Number} y - Defines the current position of the arc
  */
 function drawBall(ctx, y) {
-    values.arc_y = y + (20 * values.arc_y_direction);
-    values.arc_x = values.arc_x + (5 * values.arc_x_direction);
+    values.arc_y = y + (15 * values.arc_y_direction);
+    values.arc_x = values.arc_x + (5  * values.arc_x_direction);
 
-    if (values.arc_y >= (window.innerHeight - window.innerHeight / values.bottomPlayerPadding) - (values.playerHeight + values.arcRadius / 2)
-        && values.arc_y <= (window.innerHeight - window.innerHeight / values.bottomPlayerPadding) - (values.playerHeight)
-        && values.arc_x >= values.playerPosition_x - values.arcRadius / 2
-        && values.arc_x <= values.playerPosition_x + values.playerWidth + values.arcRadius / 2) {
+    if (values.arc_x < 0) {
+        values.arc_x += 25;
+        values.arc_x_direction *= -1;
+    } else if (values.arc_x > window.innerWidth) {
+        values.arc_x -= 25;
+        values.arc_x_direction *= -1;
+    }
+
+    if (values.arc_y >= (window.innerHeight - window.innerHeight / values.bottomPlayerPadding) - values.arcRadius
+        && values.arc_y <= window.innerHeight - window.innerHeight / values.bottomPlayerPadding - values.arcRadius/8
+        && values.arc_x >= values.playerPosition_x - 50 - values.arcRadius / 2
+        && values.arc_x <= values.playerPosition_x + 50 + values.playerWidth + values.arcRadius / 2) {
         values.arc_y_direction *= -1;
         if (values.movementDirection !== values.arc_x_direction && values.movementDirection !== 0) {
             values.arc_x_direction *= -1;
@@ -94,16 +114,14 @@ function drawBall(ctx, y) {
         values.gameScore++;
     }
 
-    if (values.arc_y <= 0)
+    if (values.arc_y <= values.targetHeight)
         values.arc_y_direction *= -1;
 
     if (values.arc_x <= 0 || values.arc_x >= window.innerWidth) {
         values.arc_x_direction *= -1;
     }
-
     ctx.beginPath();
-    ctx.arc(values.arc_x, values.arc_y, values.arcRadius, 0, 2 * Math.PI);
-    ctx.fillStyle = "white";
+    ctx.drawImage(football, values.arc_x, values.arc_y, values.arcRadius, values.arcRadius);
     ctx.fill();
 }
 
@@ -130,7 +148,7 @@ function createTargets() {
  * @param {Array} targets
  */
 function drawTargets(ctx, targets) {
-    let offset = 10;
+    let offset = 75;
 
     let isInTargetArea = false;
     if (values.arc_y <= values.targetHeight + values.arcRadius / 2)
@@ -138,17 +156,15 @@ function drawTargets(ctx, targets) {
 
     let targetExists = false;
     targets.forEach((target) => {
-        if (target.getId() !== -1) {
+        if (target.getId() !== -1)
             targetExists = true;
-
-            if (isInTargetArea && values.arc_x >= offset && values.arc_x <= offset + window.innerWidth / values.numOfTargets) {
-                target.identification = -1;
-                values.arc_y_direction *= -1;
-            }
-            ctx.beginPath();
-            ctx.rect(offset, 0, window.innerWidth / values.numOfTargets-20, values.targetHeight);
-            ctx.fill();
+        if (isInTargetArea && values.arc_x >= offset && values.arc_x <= offset + window.innerWidth / values.numOfTargets) {
+            target.identification = -1;
+            values.arc_y_direction *= -1;
         }
+        ctx.beginPath();
+        ctx.drawImage(target.getId() === -1 ? footballgoalcheckmark : footballgoal, offset, 0, window.innerWidth / values.numOfTargets - 150, values.targetHeight);
+        ctx.fill();
         offset = offset + window.innerWidth / values.numOfTargets;
     })
 
