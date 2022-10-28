@@ -48,20 +48,20 @@ function drawCtx(ctx, color) {
  * Draws the player
  * Determines if and where should the player move
  * @param {CanvasRenderingContext2D} ctx
- * @param {Number} linePosition_x - Position of the player
+ * @param {Number} playerPosition_x - Position of the player
  * @param {Number} direction - Can be either > 0 || < 0
  */
-function drawLine(ctx, linePosition_x, direction) {
+function drawPlayer(ctx, playerPosition_x, direction) {
     direction *= values.speedMultiplier;
-    linePosition_x = linePosition_x + direction;
+    playerPosition_x = playerPosition_x + direction;
 
-    if (linePosition_x >= 0 && linePosition_x <= window.outerWidth - values.playerWidth)
-        values.playerPosition_x = linePosition_x;
+    if (playerPosition_x >= 0 && playerPosition_x <= window.outerWidth - values.playerWidth)
+        values.playerPosition_x = playerPosition_x;
 
     ctx.beginPath();
     ctx.strokeStyle = 'white';
-    ctx.moveTo(linePosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding);
-    ctx.rect(linePosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding, values.playerWidth, values.playerHeight);
+    ctx.moveTo(playerPosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding);
+    ctx.rect(playerPosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding, values.playerWidth, values.playerHeight);
     ctx.fillStyle = "white";
     ctx.fill();
 }
@@ -80,7 +80,7 @@ function drawBall(ctx, y) {
         && values.arc_x >= values.playerPosition_x - values.arcRadius / 2
         && values.arc_x <= values.playerPosition_x + values.playerWidth + values.arcRadius / 2) {
         values.arc_y_direction *= -1;
-        if (values.movementDirection !== values.arc_x_direction) {
+        if (values.movementDirection !== values.arc_x_direction && values.movementDirection !== 0) {
             values.arc_x_direction *= -1;
         }
 
@@ -122,7 +122,7 @@ function update() {
 
     drawCtx(ctx, "#112");
     drawBall(ctx, values.arc_y);
-    drawLine(ctx, values.playerPosition_x, values.movementDirection);
+    drawPlayer(ctx, values.playerPosition_x, values.movementDirection);
 
 
     ctx.font = '48px serif';
