@@ -14,6 +14,9 @@ let ctx = document.getElementById("canvas").getContext("2d");
  */
 const values = {
     gameScore: 0,
+    numOfTargets: 10,
+    targets: [],
+    targetHeight: 100,
     speedMultiplier: 25,
     bottomPlayerPadding: 8,
     playerHeight: 20,
@@ -21,16 +24,35 @@ const values = {
     playerPosition_x: 0, // Player location. Defines start of the player object
     movementDirection: 0, // Defines the direction of travel for the player
     arc_x: 200, // Arc x location
-    arc_y: 100, // Arc y location
+    arc_y: 110, // Arc y location
     arcRadius: 50,
     arc_y_direction: 1, // Defines the direction of vertical travel for the arc
     arc_x_direction: 1 // Defines the direction of horizontal travel for the arc
 }
 
 /**
+ * Target class
+ */
+class Target {
+    constructor(identification) {
+        this.identification = identification;
+    }
+
+    get id() {
+        return this.getId();
+    }
+
+    getId() {
+        return this.identification;
+    }
+}
+
+/**
  * Fires immediately after the browser loads the object.
  */
 window.onload = () => {
+    for (let i = 0; i < values.numOfTargets; i++)
+        values.targets[i] = new Target(i);
     requestAnimationFrame(update);
 }
 
@@ -105,6 +127,34 @@ function drawBall(ctx, y) {
 }
 
 /**
+ * Draws the targets depending on values.Targets[]
+ * When the ball collides with any of the targets, the target disappears (by replacing its id with -1)
+ * The ball also changes it's y direction
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {Array} targets
+ */
+function drawTargets(ctx, targets) {
+    let offset = 0;
+
+    let isInTargetArea = false;
+    if (values.arc_y <= values.targetHeight + values.arcRadius / 2)
+        isInTargetArea = true;
+
+    targets.forEach((target) => {
+        if (target.identification !== -1) {
+            if (isInTargetArea && values.arc_x >= offset && values.arc_x <= offset + window.innerWidth / values.numOfTargets) {
+                target.identification = -1;
+                values.arc_y_direction *= -1;
+            }
+            ctx.beginPath();
+            ctx.rect(offset, 0, window.innerWidth / values.numOfTargets, values.targetHeight);
+            ctx.stroke();
+        }
+        offset = offset + window.innerWidth / values.numOfTargets;
+    })
+}
+
+/**
  * Recursive update function
  * Takes care of drawing everything onto the screen && checks for user inputs
  */
@@ -123,6 +173,7 @@ function update() {
     drawCtx(ctx, "#112");
     drawBall(ctx, values.arc_y);
     drawPlayer(ctx, values.playerPosition_x, values.movementDirection);
+    drawTargets(ctx, values.targets);
 
 
     ctx.font = '48px serif';
