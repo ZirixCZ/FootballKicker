@@ -14,9 +14,9 @@ let ctx = document.getElementById("canvas").getContext("2d");
  */
 const values = {
     gameScore: 0,
-    numOfTargets: 10,
+    numOfTargets: 5,
     targets: [],
-    targetHeight: 100,
+    targetHeight: 50,
     speedMultiplier: 25,
     bottomPlayerPadding: 8,
     playerHeight: 20,
@@ -31,28 +31,9 @@ const values = {
 }
 
 /**
- * Target class
- */
-class Target {
-    constructor(identification) {
-        this.identification = identification;
-    }
-
-    get id() {
-        return this.getId();
-    }
-
-    getId() {
-        return this.identification;
-    }
-}
-
-/**
  * Fires immediately after the browser loads the object.
  */
 window.onload = () => {
-    for (let i = 0; i < values.numOfTargets; i++)
-        values.targets[i] = new Target(i);
     requestAnimationFrame(update);
 }
 
@@ -126,6 +107,21 @@ function drawBall(ctx, y) {
     ctx.fill();
 }
 
+class Target {
+    constructor(identification) {
+        this.identification = identification;
+    }
+
+    getId() {
+        return this.identification;
+    }
+}
+
+function createTargets() {
+    for (let i = 0; i < values.numOfTargets; i++)
+        values.targets[i] = new Target(i);
+}
+
 /**
  * Draws the targets depending on values.Targets[]
  * When the ball collides with any of the targets, the target disappears (by replacing its id with -1)
@@ -134,24 +130,31 @@ function drawBall(ctx, y) {
  * @param {Array} targets
  */
 function drawTargets(ctx, targets) {
-    let offset = 0;
+    let offset = 10;
 
     let isInTargetArea = false;
     if (values.arc_y <= values.targetHeight + values.arcRadius / 2)
         isInTargetArea = true;
 
+    let targetExists = false;
     targets.forEach((target) => {
-        if (target.identification !== -1) {
+        if (target.getId() !== -1) {
+            targetExists = true;
+
             if (isInTargetArea && values.arc_x >= offset && values.arc_x <= offset + window.innerWidth / values.numOfTargets) {
                 target.identification = -1;
                 values.arc_y_direction *= -1;
             }
             ctx.beginPath();
-            ctx.rect(offset, 0, window.innerWidth / values.numOfTargets, values.targetHeight);
-            ctx.stroke();
+            ctx.rect(offset, 0, window.innerWidth / values.numOfTargets-20, values.targetHeight);
+            ctx.fill();
         }
         offset = offset + window.innerWidth / values.numOfTargets;
     })
+
+    if (!targetExists) {
+        createTargets()
+    }
 }
 
 /**
