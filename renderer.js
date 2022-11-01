@@ -14,7 +14,7 @@ let ctx = document.getElementById("canvas").getContext("2d");
 const values = {
     highScore: 0,
     gameScore: 0,
-    numOfTargets: 5,
+    numOfTargets: 6,
     targets: [],
     targetHeight: 150,
     speedMultiplier: 30,
@@ -26,7 +26,7 @@ const values = {
     arc_x: 200, // Arc x location
     arc_y: 300, // Arc y location
     arcRadius: 100,
-    arc_y_direction: 1, // Defines the direction of vertical travel for the arc
+    arc_y_direction: 2, // Defines the direction of vertical travel for the arc
     arc_x_direction: 0.5 // Defines the direction of horizontal travel for the arc
 }
 
@@ -38,6 +38,8 @@ let footballgoalcheckmark = new Image();
 footballgoalcheckmark.src = "./assets/footballgoalcheckmark.png";
 let foot = new Image();
 foot.src = "./assets/foot.png";
+let footballfield = new Image();
+footballfield.src = "./assets/footballfield.jpg";
 
 
 /**
@@ -55,7 +57,9 @@ function drawCtx(ctx, color) {
     ctx.beginPath();
     ctx.fillStyle = color;
     ctx.imageSmoothingQuality = "high"
-    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+    ctx.drawImage(footballfield, 0, 0, window.innerWidth, window.innerHeight);
+
 }
 
 /**
@@ -75,7 +79,6 @@ function drawPlayer(ctx, playerPosition_x, direction) {
     ctx.beginPath();
     ctx.strokeStyle = 'white';
     ctx.moveTo(playerPosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding);
-    //ctx.rect(playerPosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding, values.playerWidth, values.playerHeight);
     ctx.drawImage(foot, playerPosition_x, window.innerHeight - window.innerHeight / values.bottomPlayerPadding, values.playerWidth, values.playerHeight);
     ctx.fillStyle = "white";
     ctx.stroke();
@@ -103,7 +106,7 @@ function drawBall(ctx, y) {
     }
 
     if (values.arc_y >= (window.innerHeight - window.innerHeight / values.bottomPlayerPadding) - values.arcRadius
-        && values.arc_y + values.arcRadius - values.arcRadius / 10 <= window.innerHeight - window.innerHeight / values.bottomPlayerPadding
+        && values.arc_y + values.arcRadius - values.arcRadius / 5 <= window.innerHeight - window.innerHeight / values.bottomPlayerPadding
         && values.arc_x >= values.playerPosition_x - 50 - values.arcRadius / 2
         && values.arc_x <= values.playerPosition_x + 50 + values.playerWidth + values.arcRadius / 2) {
 
@@ -213,11 +216,14 @@ function update() {
     drawPlayer(ctx, values.playerPosition_x, values.movementDirection);
     drawTargets(ctx, values.targets);
 
-
-    ctx.font = '24px serif';
-    ctx.fillText(`high score ${values.highScore}`, window.innerWidth - 195, window.innerHeight / 1.2 + window.innerHeight / 10);
+    ctx.shadowColor="black";
+    ctx.shadowBlur=7;
     ctx.font = '64px serif';
-    ctx.fillText(values.gameScore, window.innerWidth - 100, window.innerHeight / 1.26 + window.innerHeight / 10);
+    ctx.fillText(`high score ${values.highScore}`, window.innerWidth - 390, window.innerHeight / 1.15 + window.innerHeight / 10);
+    ctx.shadowColor="black";
+    ctx.shadowBlur=7;
+    ctx.font = '170px serif';
+    ctx.fillText(values.gameScore, window.innerWidth - 150, window.innerHeight / 1.26 + window.innerHeight / 10);
 
     setTimeout(() => {
         requestAnimationFrame(update);
