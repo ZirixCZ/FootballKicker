@@ -25,9 +25,9 @@ const values = {
     movementDirection: 0, // Defines the direction of travel for the player
     arc_x: 200, // Arc x location
     arc_y: 300, // Arc y location
-    arcRadius: 75,
+    arcRadius: 100,
     arc_y_direction: 1, // Defines the direction of vertical travel for the arc
-    arc_x_direction: 1 // Defines the direction of horizontal travel for the arc
+    arc_x_direction: 0.5 // Defines the direction of horizontal travel for the arc
 }
 
 let football = new Image();
@@ -38,7 +38,6 @@ let footballgoalcheckmark = new Image();
 footballgoalcheckmark.src = "./assets/footballgoalcheckmark.png";
 let foot = new Image();
 foot.src = "./assets/foot.png";
-
 
 
 /**
@@ -82,14 +81,18 @@ function drawPlayer(ctx, playerPosition_x, direction) {
     ctx.stroke();
 }
 
+function calcAngle(movementDirection, playerSpeed) {
+    return movementDirection * playerSpeed;
+}
+
 /**
  * Draws the arc
  * @param {CanvasRenderingContext2D} ctx
  * @param {Number} y - Defines the current position of the arc
  */
 function drawBall(ctx, y) {
-    values.arc_y = y + (15 * values.arc_y_direction);
-    values.arc_x = values.arc_x + (5  * values.arc_x_direction);
+    values.arc_y = y + (5 * values.arc_y_direction);
+    values.arc_x = values.arc_x + (5 * values.arc_x_direction);
 
     if (values.arc_x < 0) {
         values.arc_x += 25;
@@ -100,12 +103,14 @@ function drawBall(ctx, y) {
     }
 
     if (values.arc_y >= (window.innerHeight - window.innerHeight / values.bottomPlayerPadding) - values.arcRadius
-        && values.arc_y <= window.innerHeight - window.innerHeight / values.bottomPlayerPadding - values.arcRadius/8
+        && values.arc_y + values.arcRadius - values.arcRadius / 10 <= window.innerHeight - window.innerHeight / values.bottomPlayerPadding
         && values.arc_x >= values.playerPosition_x - 50 - values.arcRadius / 2
         && values.arc_x <= values.playerPosition_x + 50 + values.playerWidth + values.arcRadius / 2) {
+
         values.arc_y_direction *= -1;
-        if (values.movementDirection !== values.arc_x_direction && values.movementDirection !== 0) {
-            values.arc_x_direction *= -1;
+
+        if (values.movementDirection !== 0) {
+            values.arc_x_direction = calcAngle(values.movementDirection, values.speedMultiplier / 10);
         }
     }
 
@@ -155,8 +160,14 @@ function drawTargets(ctx, targets) {
     if (values.arc_y <= values.targetHeight + values.arcRadius / 2)
         isInTargetArea = true;
 
-    if (isInTargetArea)
+    if (isInTargetArea) {
         values.arc_y_direction *= -1;
+        if (values.arc_x_direction < 0) {
+            values.arc_x_direction = -1;
+        } else {
+            values.arc_x_direction = 1;
+        }
+    }
 
     let targetExists = false;
     targets.forEach((target) => {
