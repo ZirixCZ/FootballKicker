@@ -12,6 +12,7 @@ let ctx = document.getElementById("canvas").getContext("2d");
  * @type {{arc_y: number, playerHeight: number, movementDirection: number, arc_y_direction: number, speedMultiplier: number, arc_x: number, arc_x_direction: number, playerPosition_x: number, playerWidth: number, gameScore: number, bottomPlayerPadding: number}}
  */
 const values = {
+    highScore: 0,
     gameScore: 0,
     numOfTargets: 5,
     targets: [],
@@ -106,12 +107,12 @@ function drawBall(ctx, y) {
         if (values.movementDirection !== values.arc_x_direction && values.movementDirection !== 0) {
             values.arc_x_direction *= -1;
         }
+    }
 
-
-        if (values.arc_y < (window.innerHeight - window.innerHeight / values.bottomPlayerPadding) - (values.playerHeight + 25))
-            return;
-
-        values.gameScore++;
+    if (values.arc_y > window.innerHeight) {
+        values.gameScore = 0;
+        values.arc_x = 200
+        values.arc_y = 300
     }
 
     if (values.arc_y <= values.targetHeight)
@@ -148,19 +149,26 @@ function createTargets() {
  * @param {Array} targets
  */
 function drawTargets(ctx, targets) {
-    let offset = 75;
+    let offset = 25;
 
     let isInTargetArea = false;
     if (values.arc_y <= values.targetHeight + values.arcRadius / 2)
         isInTargetArea = true;
+
+    if (isInTargetArea)
+        values.arc_y_direction *= -1;
 
     let targetExists = false;
     targets.forEach((target) => {
         if (target.getId() !== -1)
             targetExists = true;
         if (isInTargetArea && values.arc_x >= offset && values.arc_x <= offset + window.innerWidth / values.numOfTargets) {
-            target.identification = -1;
-            values.arc_y_direction *= -1;
+            if (target.identification !== -1) {
+                values.gameScore++;
+                if (values.gameScore > values.highScore)
+                    values.highScore = values.gameScore;
+                target.identification = -1;
+            }
         }
         ctx.beginPath();
         ctx.drawImage(target.getId() === -1 ? footballgoalcheckmark : footballgoal, offset, 0, window.innerWidth / values.numOfTargets - 150, values.targetHeight);
@@ -195,10 +203,10 @@ function update() {
     drawTargets(ctx, values.targets);
 
 
-    ctx.font = '48px serif';
-    ctx.fillText('My beloved game', window.innerWidth / 2, window.innerHeight / 2);
-    ctx.font = '90px serif';
-    ctx.fillText(values.gameScore, window.innerWidth / 2, window.innerHeight / 2 + 150);
+    ctx.font = '24px serif';
+    ctx.fillText(`high score ${values.highScore}`, window.innerWidth - 195, window.innerHeight / 1.2 + window.innerHeight / 10);
+    ctx.font = '64px serif';
+    ctx.fillText(values.gameScore, window.innerWidth - 100, window.innerHeight / 1.26 + window.innerHeight / 10);
 
     setTimeout(() => {
         requestAnimationFrame(update);
