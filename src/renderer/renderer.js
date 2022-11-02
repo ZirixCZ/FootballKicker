@@ -157,7 +157,7 @@ function createTargets() {
  * @param {Array} targets
  */
 function drawTargets(ctx, targets) {
-    let offset = 25;
+    let offset = 50;
 
     let isInTargetArea = false;
     if (values.arc_y <= values.targetHeight + values.arcRadius / 2)
@@ -229,5 +229,3 @@ function update() {
         requestAnimationFrame(update);
     }, 1000 / 60);
 }
-
-
