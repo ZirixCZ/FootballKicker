@@ -31,15 +31,15 @@ const values = {
 }
 
 let football = new Image();
-football.src = "./assets/football.png";
+football.src = "../../assets/football.png";
 let footballgoal = new Image();
-footballgoal.src = "./assets/footballgoal.png";
+footballgoal.src = "../../assets/footballgoal.png";
 let footballgoalcheckmark = new Image();
-footballgoalcheckmark.src = "./assets/footballgoalcheckmark.png";
+footballgoalcheckmark.src = "../../assets/footballgoalcheckmark.png";
 let foot = new Image();
-foot.src = "./assets/foot.png";
+foot.src = "../../assets/foot.png";
 let footballfield = new Image();
-footballfield.src = "./assets/footballfield.jpg";
+footballfield.src = "../../assets/footballfield.jpg";
 
 
 /**
@@ -157,7 +157,7 @@ function createTargets() {
  * @param {Array} targets
  */
 function drawTargets(ctx, targets) {
-    let offset = 25;
+    let offset = 50;
 
     let isInTargetArea = false;
     if (values.arc_y <= values.targetHeight + values.arcRadius / 2)
@@ -229,5 +229,3 @@ function update() {
         requestAnimationFrame(update);
     }, 1000 / 60);
 }
-
-

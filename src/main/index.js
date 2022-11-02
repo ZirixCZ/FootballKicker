@@ -3,12 +3,9 @@ const {app, BrowserWindow} = require('electron')
 const createWindow = () => {
     const win = new BrowserWindow({
         fullscreen: true,
-        webPreferences: {
-            preload: 'preload.js'
-        },
     })
 
-    win.loadFile('index.html')
+    win.loadFile('src/renderer/index.html')
 }
 
 app.whenReady().then(() => {
