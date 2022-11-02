@@ -31,15 +31,15 @@ const values = {
 }
 
 let football = new Image();
-football.src = "../../assets/football.png";
+football.src = "./assets/football.png";
 let footballgoal = new Image();
-footballgoal.src = "../../assets/footballgoal.png";
+footballgoal.src = "./assets/footballgoal.png";
 let footballgoalcheckmark = new Image();
-footballgoalcheckmark.src = "../../assets/footballgoalcheckmark.png";
+footballgoalcheckmark.src = "./assets/footballgoalcheckmark.png";
 let foot = new Image();
-foot.src = "../../assets/foot.png";
+foot.src = "./assets/foot.png";
 let footballfield = new Image();
-footballfield.src = "../../assets/footballfield.jpg";
+footballfield.src = "./assets/footballfield.jpg";
 
 
 /**
